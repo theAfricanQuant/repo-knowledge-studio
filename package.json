@@ -1,0 +1,24 @@
+{
+  "name": "repo-knowledge-studio",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Evidence-linked codebase handbooks, learning guides, custom diagrams and video explainers.",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "start": "node src/server.mjs",
+    "dev": "node --watch src/server.mjs",
+    "test": "node --test test/*.test.mjs",
+    "analyze": "node src/cli.mjs analyze",
+    "pi": "node src/pi-cli.mjs",
+    "setup": "node src/setup.mjs",
+    "studio": "node src/cli.mjs"
+  },
+  "dependencies": {
+    "@earendil-works/pi-coding-agent": "1.3.0",
+    "gsap": "3.14.2",
+    "hyperframes": "0.7.111"
+  }
+}
