@@ -6,6 +6,7 @@ import {startJob,getJob,cancelJob,initializeJobs} from './jobs.mjs';
 import {listProjects,loadProject,projectDir,projectRoot,resolveAsset,readJson,writeJson} from './store.mjs';
 import {checkFreshness,searchKnowledge} from './engine.mjs';
 import {exportGuide} from './export.mjs';
+import {rustPortAssessment} from './rust-port.mjs';
 import {diagramsFor} from './visuals.mjs';
 import {pageMedia,videoUrls} from './learning-media.mjs';
 const publicRoot=path.join(projectRoot,'public');
@@ -28,6 +29,7 @@ export async function createServer(){await initializeJobs();return http.createSe
  if(route[3]==='freshness'){const f=await checkFreshness(k);return json(res,200,{...f,current:f.fresh,changedFiles:[...(f.changed||[]),...(f.removed||[])],affectedDocuments:f.affected||[]});}
  if(route[3]==='source'){const evidence=k.evidence.find(e=>e.id===url.searchParams.get('evidence'));if(!evidence)return json(res,404,{error:'Evidence not found.'});return json(res,200,evidence);}
  if(route[3]==='search')return json(res,200,searchKnowledge(k,url.searchParams.get('q')));
+ if(route[3]==='rust-port')return json(res,200,rustPortAssessment(k));
  if(route[3]==='diagrams')return json(res,200,diagramsFor(k));
  if(route[3]==='page-media'){const prefix=k.edition?`editions/${k.edition}/`:'';const videos=await readJson(path.join(projectDir(id),prefix,'videos.json'),[]);return json(res,200,pageMedia(k,diagramsFor(k),videoUrls(id,k.edition,videos)));}
  if(route[3]==='videos'){

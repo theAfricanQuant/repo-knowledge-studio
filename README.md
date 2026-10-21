@@ -73,3 +73,7 @@ The original `video-study-guide` skill by theAfricanQuant is included under `ski
 ## Media in context
 
 Handbook pages and learning chapters can place diagrams, comparison tables, and explainers within their relevant sections using `learningBlocks`. The same placements work in chapter and full-course reading modes. When explicit placements are absent, diagrams and videos are matched conservatively by shared source evidence; glossary and plan pages are excluded from automatic matching. The media libraries remain available. Existing captioned videos are silent, with playback controls and source references beside the lesson.
+
+## Explore a Rust port
+
+Each collection has an **Explore a Rust port** action with a source-based migration assessment: existing components, proposed Rust representations, compatibility risks, a small first experiment, and verification checkpoints. It works without provider credentials and does not translate or execute the repository. REA can supply optional binary evidence during a later investigation; the app does not claim that REA has run. See `docs/RUST_PORTS.md`.
