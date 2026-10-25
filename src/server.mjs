@@ -36,7 +36,15 @@ export async function createServer(){await initializeJobs();return http.createSe
  if(req.method==='POST'&&route[5]==='render')return json(res,202,await startJob({projectId:id,render:route[4]}));
  const prefix=k.edition?`editions/${k.edition}/`:'';const videos=await readJson(path.join(projectDir(id),prefix,'videos.json'),[]);return json(res,200,videos.map(v=>({...v,previewUrl:`/artifacts/${id}/${prefix}${v.previewPath||`videos/${v.id}/preview.html`}`,videoUrl:(v.videoPath||v.outputPath)?`/artifacts/${id}/${prefix}${v.videoPath||v.outputPath}`:null,posterUrl:v.posterPath?`/artifacts/${id}/${prefix}${v.posterPath}`:null,captionsUrl:v.captionsPath?`/artifacts/${id}/${prefix}${v.captionsPath}`:null})));}
  if(route[3]==='links'){const file=path.join(projectDir(id),'links.json');if(req.method==='GET')return json(res,200,await readJson(file,[]));const input=await body(req);const parsed=new URL(input.url);if(!['http:','https:'].includes(parsed.protocol))throw new Error('Use an HTTP or HTTPS link.');parsed.username='';parsed.password='';for(const key of [...parsed.searchParams.keys()])if(/token|key|secret|pass|auth|signature/i.test(key))parsed.searchParams.set(key,'[REDACTED]');const links=await readJson(file,[]);links.push({url:parsed.href,title:String(input.title||'').slice(0,200),addedAt:new Date().toISOString()});await writeJson(file,links);return json(res,201,links);}
- if(route[3]==='export'){res.setHeader('Content-Disposition',`attachment; filename="${k.name.replace(/[^a-zA-Z0-9_-]/g,'-')}-guide.html"`);res.writeHead(200,{'Content-Type':'text/html; charset=utf-8'});return res.end(exportGuide(k));}
+ if(route[3]==='export'){
+ const chapterId=url.searchParams.get('chapter');
+ if(chapterId!==null&&!k.chapters.some(chapter=>chapter.id===chapterId))return json(res,404,{error:'Learning chapter not found.'});
+ const chapter=chapterId===null?null:k.chapters.find(item=>item.id===chapterId);
+ const filename=(chapter?chapter.title:k.name).replace(/[^a-zA-Z0-9_-]/g,'-').replace(/-+/g,'-').slice(0,90)||'knowledge-guide';
+ res.setHeader('Content-Disposition',`${chapter?'inline':'attachment'}; filename="${filename}${chapter?'-chapter':''}.html"`);
+ res.writeHead(200,{'Content-Type':'text/html; charset=utf-8','X-Content-Type-Options':'nosniff'});
+ return res.end(exportGuide(k,chapterId===null?{}:{chapterId}));
+ }
  if(route[3]==='knowledge'){res.setHeader('Content-Disposition','attachment; filename="knowledge.json"');return json(res,200,k);}
  }
  return json(res,404,{error:'Unknown API route.'});
